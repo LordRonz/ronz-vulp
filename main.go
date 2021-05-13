@@ -13,13 +13,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"strconv"
 
 	"github.com/line/line-bot-sdk-go/v7/linebot"
+	"github.com/lordronz/ronz-vulp/nhentai"
 )
 
 var bot *linebot.Client
@@ -53,6 +57,61 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				if strings.Contains(strings.ToLower(message.Text), "sus") {
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
 						log.Print(err)
+					}
+				} else if strings.ToLower(message.Text) == "nhentai" {
+					client := &http.Client{}
+					req, err := http.NewRequest("GET", "https://nhentai.net/random", nil)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+					req.Header.Add("User-Agent", "ronz-vulp")
+					res, err := client.Do(req)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+					splittedUrl := strings.Split(res.Request.URL.String(), "/")
+					randomUrl := fmt.Sprintf("https://nhentai.net/api/gallery/%s", splittedUrl[len(splittedUrl) - 2])
+
+					req, err = http.NewRequest("GET", randomUrl, nil)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+					req.Header.Add("User-Agent", "ronz-vulp")
+					res, err = client.Do(req)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+					if res.Body != nil {
+						defer res.Body.Close()
+					}
+					body, err := ioutil.ReadAll(res.Body)
+					if err != nil {
+						log.Print(err)
+						return
+					}
+					nhentaiRes := nhentai.Nhentai{}
+					err = json.Unmarshal(body, &nhentaiRes)
+					if err != nil {
+						log.Printf("unable to parse value: %q, error: %s", string(body), err.Error())
+						return
+					}
+					imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Media_id + "/" + "1" + nhentai.NhentaiExtension[nhentaiRes.Images.Pages[0].T]
+					template := linebot.NewImageCarouselTemplate(
+						linebot.NewImageCarouselColumn(
+							imgUrl,
+							linebot.NewURIAction("Go to LINE", "https://nhentai.net/g/" + strconv.Itoa(nhentaiRes.Id)),
+						),
+					)
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						linebot.NewTemplateMessage("Image carousel alt text", template),
+					).Do(); err != nil {
+						log.Print(err)
+						return
 					}
 				}
 			}

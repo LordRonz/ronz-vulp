@@ -99,7 +99,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Printf("unable to parse value: %q, error: %s", string(body), err.Error())
 						return
 					}
-					imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Media_id + "/" + "1" + nhentai.NhentaiExtension[nhentaiRes.Images.Pages[0].T]
+					imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Media_id + "/" + "1." + nhentai.NhentaiExtension[nhentaiRes.Images.Pages[0].T]
 					template := linebot.NewImageCarouselTemplate(
 						linebot.NewImageCarouselColumn(
 							imgUrl,
@@ -108,7 +108,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,
-						linebot.NewTemplateMessage("Image carousel alt text", template),
+						linebot.NewTemplateMessage("Hentai for you", template),
 					).Do(); err != nil {
 						log.Print(err)
 						return

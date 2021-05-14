@@ -99,12 +99,19 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Printf("unable to parse value: %q, error: %s", string(body), err.Error())
 						return
 					}
-					imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Media_id + "/" + "1." + nhentai.NhentaiExtension[nhentaiRes.Images.Pages[0].T]
+					var columns []*linebot.ImageCarouselColumn
+					for i := 1; i < 6; i++ {
+						imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Media_id + "/" + strconv.Itoa(i) + "." + nhentai.NhentaiExtension[nhentaiRes.Images.Pages[i - 1].T]
+						columns = append(
+							columns,
+							linebot.NewImageCarouselColumn(
+								imgUrl,
+								linebot.NewURIAction("g/" + strconv.Itoa(nhentaiRes.Id), "https://nhentai.net/g/" + strconv.Itoa(nhentaiRes.Id)),
+							),
+						)
+					}
 					template := linebot.NewImageCarouselTemplate(
-						linebot.NewImageCarouselColumn(
-							imgUrl,
-							linebot.NewURIAction("Go to LINE", "https://nhentai.net/g/" + strconv.Itoa(nhentaiRes.Id)),
-						),
+						columns...,
 					)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,

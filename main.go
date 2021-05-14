@@ -56,7 +56,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						log.Print(err)
 					}
 				} else if strings.ToLower(message.Text) == "nhentai" {
-					nhentai.NhentaiRandom(bot, event)
+					go nhentai.NhentaiRandom(bot, event)
 				}
 			}
 		}

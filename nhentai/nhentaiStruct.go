@@ -31,6 +31,7 @@ type Nhentai struct {
 	Upload_date int `json:"upload_date"`
 	Num_pages int `json:"num_pages"`
 	Num_favorites int `json:"num_favorites"`
+	Error string `json:"error"`
 }
 
 type NhentaiGalleries struct {

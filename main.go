@@ -52,6 +52,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
+				log.Println(message.Text)
 				msgArr := strings.Fields(strings.ToLower(message.Text))
 				if len(msgArr) == 1 && msgArr[0] == "nhentai" {
 					go nhentai.NhentaiRandom(bot, event)

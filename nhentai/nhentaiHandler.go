@@ -111,6 +111,11 @@ func NhentaiSearch(bot *linebot.Client, event *linebot.Event, query string) {
 		log.Printf("unable to parse value: %q, error: %s", string(body), err.Error())
 		return
 	}
+	if len(nhentaiRes.Result) == 0 {
+		if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("No result for " + strings.Join(strings.Split(query, "%20"), " "))).Do(); err != nil {
+			log.Print(err)
+		}
+	}
 	var columns []*linebot.ImageCarouselColumn
 	maxColumns := utils.Min(int64(len(nhentaiRes.Result)), 10)
 	for i := 0; i < int(maxColumns); i++ {

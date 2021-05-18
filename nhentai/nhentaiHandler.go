@@ -114,7 +114,7 @@ func NhentaiSearch(bot *linebot.Client, event *linebot.Event, query string) {
 	var columns []*linebot.ImageCarouselColumn
 	maxColumns := utils.Min(int64(len(nhentaiRes.Result)), 10)
 	for i := 0; i < int(maxColumns); i++ {
-		imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Result[i].Media_id + "/" + strconv.Itoa(i) + "." + NhentaiExtension[nhentaiRes.Result[i].Images.Pages[0].T]
+		imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Result[i].Media_id + "/1." + NhentaiExtension[nhentaiRes.Result[i].Images.Pages[0].T]
 		resId, err := nhentaiRes.Result[i].Id.Int64()
 		if err != nil {
 			log.Printf(err.Error())

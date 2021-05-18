@@ -34,7 +34,7 @@ type Nhentai struct {
 type NhentaiGalleries struct {
 	Result []Nhentai `json:"result"`
 	Num_pages int `json:"num_pages"`
-	Per_pages int `json:"per_pages"`
+	Per_page int `json:"per_page"`
 }
 
 var NhentaiExtension map[string]string = map[string]string {

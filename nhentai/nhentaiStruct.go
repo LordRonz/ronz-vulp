@@ -1,7 +1,7 @@
 package nhentai
 
 type Nhentai struct {
-	Id int `json:"id"`
+	Id int `json:"id,string"`
 	Media_id string `json:"media_id"`
 	Title struct {
 		English string `json:"english"`

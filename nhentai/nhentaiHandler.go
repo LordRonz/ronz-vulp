@@ -58,11 +58,16 @@ func NhentaiRandom(bot *linebot.Client, event *linebot.Event) {
 	maxColumns := utils.Min(int64(nhentaiRes.Num_pages), 10)
 	for i := 1; i <= int(maxColumns); i++ {
 		imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Media_id + "/" + strconv.Itoa(i) + "." + NhentaiExtension[nhentaiRes.Images.Pages[i - 1].T]
+		resId, err := nhentaiRes.Id.Int64()
+		if err != nil {
+			log.Printf(err.Error())
+			return
+		}
 		columns = append(
 			columns,
 			linebot.NewImageCarouselColumn(
 				imgUrl,
-				linebot.NewURIAction("g/" + strconv.Itoa(nhentaiRes.Id), "https://nhentai.net/g/" + strconv.Itoa(nhentaiRes.Id)),
+				linebot.NewURIAction("g/" + strconv.Itoa(int(resId)), "https://nhentai.net/g/" + strconv.Itoa(int(resId))),
 			),
 		)
 	}
@@ -110,11 +115,16 @@ func NhentaiSearch(bot *linebot.Client, event *linebot.Event, query string) {
 	maxColumns := utils.Min(int64(len(nhentaiRes.Result)), 10)
 	for i := 0; i < int(maxColumns); i++ {
 		imgUrl := "https://i.nhentai.net/galleries/" + nhentaiRes.Result[i].Media_id + "/" + strconv.Itoa(i) + "." + NhentaiExtension[nhentaiRes.Result[i].Images.Pages[0].T]
+		resId, err := nhentaiRes.Result[i].Id.Int64()
+		if err != nil {
+			log.Printf(err.Error())
+			return
+		}
 		columns = append(
 			columns,
 			linebot.NewImageCarouselColumn(
 				imgUrl,
-				linebot.NewURIAction("g/" + strconv.Itoa(nhentaiRes.Result[i].Id), "https://nhentai.net/g/" + strconv.Itoa(nhentaiRes.Result[i].Id)),
+				linebot.NewURIAction("g/" + strconv.Itoa(int(resId)), "https://nhentai.net/g/" + strconv.Itoa(int(resId))),
 			),
 		)
 	}

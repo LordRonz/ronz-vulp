@@ -1,7 +1,9 @@
 package nhentai
 
+import "encoding/json"
+
 type Nhentai struct {
-	Id int `json:"id,string"`
+	Id json.Number `json:"id"`
 	Media_id string `json:"media_id"`
 	Title struct {
 		English string `json:"english"`

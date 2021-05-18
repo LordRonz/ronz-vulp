@@ -56,11 +56,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
 						log.Print(err)
 					}
-				} else if len(msgArr) == 1 && msgArr[0] == "nhentai" {
+				}
+				if len(msgArr) == 1 && msgArr[0] == "nhentai" {
 					go nhentai.NhentaiRandom(bot, event)
 				} else if msgArr[0] == "nhentai" {
 					queryArr := msgArr[1:]
-					query := strings.Join(queryArr, " ")
+					query := strings.Join(queryArr, "%20")
 					go nhentai.NhentaiSearch(bot, event, query)
 				}
 			}

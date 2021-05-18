@@ -51,12 +51,17 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
+				msgArr := strings.Fields(strings.ToLower(message.Text))
 				if strings.Contains(strings.ToLower(message.Text), "sus") {
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
 						log.Print(err)
 					}
-				} else if strings.ToLower(message.Text) == "nhentai" {
+				} else if len(msgArr) == 1 && msgArr[0] == "nhentai" {
 					go nhentai.NhentaiRandom(bot, event)
+				} else if msgArr[0] == "nhentai" {
+					queryArr := msgArr[1:]
+					query := strings.Join(queryArr, " ")
+					go nhentai.NhentaiSearch(bot, event, query)
 				}
 			}
 		}

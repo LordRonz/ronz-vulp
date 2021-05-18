@@ -31,6 +31,12 @@ type Nhentai struct {
 	Num_favorites int `json:"num_favorites"`
 }
 
+type NhentaiGalleries struct {
+	Result []Nhentai `json:"result"`
+	Num_pages int `json:"num_pages"`
+	Per_pages int `json:"per_pages"`
+}
+
 var NhentaiExtension map[string]string = map[string]string {
 	"j": "jpg",
 	"p": "png",

@@ -49,32 +49,34 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, event := range events {
-		if event.Type == linebot.EventTypeMessage {
-			switch message := event.Message.(type) {
-			case *linebot.TextMessage:
-				log.Println(message.Text)
-				msgArr := strings.Fields(strings.ToLower(message.Text))
-				if len(msgArr) == 1 && msgArr[0] == "nhentai" {
-					go nhentai.NhentaiRandom(bot, event)
-				} else if msgArr[0] == "nhentai" {
-					queryArr := msgArr[1:]
-					query := strings.Join(queryArr, "%20")
-					go nhentai.NhentaiSearch(bot, event, query)
-				} else if strings.Contains(strings.ToLower(message.Text), "sus") {
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
-						log.Print(err)
-					}
-				} else if strings.HasPrefix(strings.ToLower(message.Text), "g/") {
-					nhCode := strings.Split(message.Text, "/")[1]
-					if nhCodeInt, err := strconv.Atoi(nhCode); err != nil {
-						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("Invalid nhentai code")).Do(); err != nil {
+		go func (event *linebot.Event) {
+			if event.Type == linebot.EventTypeMessage {
+				switch message := event.Message.(type) {
+				case *linebot.TextMessage:
+					log.Println(message.Text)
+					msgArr := strings.Fields(strings.ToLower(message.Text))
+					if len(msgArr) == 1 && msgArr[0] == "nhentai" {
+						nhentai.NhentaiRandom(bot, event)
+					} else if msgArr[0] == "nhentai" {
+						queryArr := msgArr[1:]
+						query := strings.Join(queryArr, "%20")
+						nhentai.NhentaiSearch(bot, event, query)
+					} else if strings.Contains(strings.ToLower(message.Text), "sus") {
+						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
 							log.Print(err)
 						}
-					} else {
-						go nhentai.NhentaiSearchById(bot, event, strconv.Itoa(nhCodeInt))
+					} else if strings.HasPrefix(strings.ToLower(message.Text), "g/") {
+						nhCode := strings.Split(message.Text, "/")[1]
+						if nhCodeInt, err := strconv.Atoi(nhCode); err != nil {
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("Invalid nhentai code")).Do(); err != nil {
+								log.Print(err)
+							}
+						} else {
+							nhentai.NhentaiSearchById(bot, event, strconv.Itoa(nhCodeInt))
+						}
 					}
 				}
 			}
-		}
+		}(event)
 	}
 }

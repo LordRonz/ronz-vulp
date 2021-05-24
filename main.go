@@ -22,6 +22,7 @@ import (
 
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 	"github.com/lordronz/ronz-vulp/nhentai"
+	"github.com/lordronz/ronz-vulp/amogus"
 )
 
 var bot *linebot.Client
@@ -61,10 +62,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						queryArr := msgArr[1:]
 						query := strings.Join(queryArr, "%20")
 						nhentai.NhentaiSearch(bot, event, query)
-					} else if strings.Contains(strings.ToLower(message.Text), "sus") {
-						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
-							log.Print(err)
-						}
 					} else if strings.HasPrefix(strings.ToLower(message.Text), "g/") {
 						nhCode := strings.Split(message.Text, "/")[1]
 						if nhCodeInt, err := strconv.Atoi(nhCode); err != nil {
@@ -73,6 +70,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 							}
 						} else {
 							nhentai.NhentaiSearchById(bot, event, strconv.Itoa(nhCodeInt))
+						}
+					} else {
+						cleanSus := amogus.RemoveDups(strings.ToLower(message.Text))
+						if strings.Contains(cleanSus, "sus") {
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("AMOGUS")).Do(); err != nil {
+								log.Print(err)
+							}
 						}
 					}
 				}
